@@ -255,7 +255,14 @@ namespace VayikraApi.Controllers
         {
             ReadUpBooksContext context = new ReadUpBooksContext();
 
+
             Book book = context.Books.FirstOrDefault(x => x.Id == bookId);
+            Library library = context.Library.FirstOrDefault(x => x.Id == book.LibraryId);
+            if (library == null)
+            {
+                // Return a 404 Not Found response if the book doesn't exist
+                return NotFound(new { message = "library not found" });
+            }
             if (book == null)
             {
                 // Return a 404 Not Found response if the book doesn't exist
@@ -263,6 +270,8 @@ namespace VayikraApi.Controllers
             }
 
             book.State = 2;
+
+            library.number = library.number - 1;
             context.Update(book);
             context.SaveChanges();
             return Ok();
